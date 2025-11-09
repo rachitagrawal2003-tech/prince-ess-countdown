@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cozy Countdown ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Instrument+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#0d0f14;
+    --bg2:#161824;
+    --ink:#f6f7fb;
+    --muted:#c8cbe6;
+    --card:#1b1e2b;
+    --accent:#ffd6a5;
+    --rose:#fecdd3;
+    --mint:#bffae2;
+    --lav:#c7d2fe;
+    --shadow:0 20px 60px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--ink);
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    background:radial-gradient(1000px 800px at 20% -10%,#2a2f4a 0%,var(--bg1) 60%),
+               radial-gradient(1200px 800px at 120% 10%,#1a1f36 0%,var(--bg2) 60%),var(--bg2);
+  }
+  .wrap{max-width:960px;margin:auto;padding:24px}
+  .title{font-family:"Instrument Serif",serif;font-size:32px;margin-bottom:8px}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:24px}
+  .countdown{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .unit{background:#1b1e2b;border-radius:14px;text-align:center;padding:16px 8px;border:1px solid rgba(255,255,255,.08)}
+  .num{font-size:38px;font-weight:800}
+  .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .caption{margin-top:24px;color:var(--muted);font-size:14px}
+  .sky{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+  .star{position:absolute;width:2px;height:2px;background:radial-gradient(circle,#fff,rgba(255,255,255,.2));border-radius:50%;
+        animation:float var(--dur) linear infinite;opacity:.7;filter:drop-shadow(0 0 6px rgba(255,255,255,.4));}
+  @keyframes float{to{transform:translateY(-120vh) translateX(var(--dx));opacity:.2}}
+  .confetti{position:fixed;inset:0;pointer-events:none;display:none}
+  .piece{position:absolute;width:10px;height:14px;background:var(--c);top:100%;left:var(--x);
+         animation:fall 1.8s ease-out forwards}
+  @keyframes fall{to{transform:translateY(-110vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+<div class="sky" id="sky"></div>
+<div class="confetti" id="confetti"></div>
+
+<div class="wrap">
+  <div class="title" id="title">Countdown to Meeting You 💛</div>
+  <div class="sub" id="dateText">Target: 27 Nov 2025, 00:00</div>
+
+  <div class="countdown">
+    <div class="unit"><div class="num" id="days">--</div><div class="label">days</div></div>
+    <div class="unit"><div class="num" id="hours">--</div><div class="label">hours</div></div>
+    <div class="unit"><div class="num" id="minutes">--</div><div class="label">minutes</div></div>
+    <div class="unit"><div class="num" id="seconds">--</div><div class="label">seconds</div></div>
+  </div>
+
+  <div class="caption">we're getting closer every second ✨</div>
+</div>
+
+<script>
+const targetDate = new Date("2025-11-27T00:00:00");
+
+const dEl = document.getElementById("days");
+const hEl = document.getElementById("hours");
+const mEl = document.getElementById("minutes");
+const sEl = document.getElementById("seconds");
+const confetti = document.getElementById("confetti");
+const sky = document.getElementById("sky");
+
+// Floating stars
+for(let i=0;i<60;i++){
+  const s=document.createElement("div");
+  s.className="star";
+  s.style.left=Math.random()*100+"vw";
+  s.style.top=(100+Math.random()*50)+"vh";
+  s.style.setProperty("--dur",12+Math.random()*18+"s");
+  s.style.setProperty("--dx",(Math.random()*80-40)+"vw");
+  sky.appendChild(s);
+}
+
+function update(){
+  const now = new Date();
+  const diff = Math.max(0, targetDate - now);
+  const s = Math.floor(diff/1000);
+  const d = Math.floor(s / (3600*24));
+  const h = Math.floor((s % (3600*24)) / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const ss = s % 60;
+
+  dEl.textContent = d;
+  hEl.textContent = String(h).padStart(2,"0");
+  mEl.textContent = String(m).padStart(2,"0");
+  sEl.textContent = String(ss).padStart(2,"0");
+
+  if(diff<=0 && !update.done){
+    burst();
+    update.done=true;
+  }
+  requestAnimationFrame(update);
+}
+
+function burst(){
+  confetti.innerHTML="";
+  confetti.style.display="block";
+  const colors=["#ffd6a5","#fecdd3","#c7d2fe","#bffae2","#fef3c7","#e9d5ff"];
+  for(let i=0;i<80;i++){
+    const p=document.createElement("div");
+    p.className="piece";
+    p.style.setProperty("--x",(Math.random()*100)+"%");
+    p.style.setProperty("--c",colors[Math.floor(Math.random()*colors.length)]);
+    confetti.appendChild(p);
+  }
+  setTimeout(()=>confetti.style.display="none",2000);
+}
+
+update();
+</script>
+</body>
+</html>
